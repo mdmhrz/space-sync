@@ -14,7 +14,7 @@ const Footer = () => {
             <div className='container mx-auto max-w-7xl px-6'>
                 <div className='flex flex-col lg:flex-row items-start lg:items-center justify-between gap-12 py-20 lg:py-30'>
                     <img src="./footer/footer-logo.svg" alt="footer-logo" />
-                    <p className='text-background max-w-md'>Your all-in-one platform for job scheduling, employee management, and client service built to keep your business running smoothly from anywhere.</p>
+                    <p className='text-background max-w-md text-xl'>Your all-in-one platform for job scheduling, employee management, and client service built to keep your business running smoothly from anywhere.</p>
                     <div className='flex items-center gap-6'>
                         <img src="./footer/app-store.svg" alt="App store" />
                         <img src="./footer/play-store.svg" alt="Play store" />
