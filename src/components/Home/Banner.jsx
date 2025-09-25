@@ -4,7 +4,7 @@ import React from 'react';
 const Banner = () => {
     return (
         <div className='bg-gradient-to-br from-primary/10 via-background via-background via-primary-10 to-primary/10'>
-            <div className='container mx-auto max-w-7xl flex flex-col md:flex-row gap-10 items-center justify-between pt-20'>
+            <div className='container mx-auto max-w-7xl px-6 flex flex-col md:flex-row gap-10 items-center justify-between pt-20'>
                 {/* Left Side */}
                 <div className='max-w-[50%] relative -mt-20'>
                     <img className='absolute -top-22 left-20' src="/banner/text-background.svg" alt="text-background" />
