@@ -7,6 +7,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import SocialLogin from '../SocialLogin/SocialLogin';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 // Floating Label Input Component
 const FloatingInput = ({ id, name, type = "text", placeholder, value, onChange, className = "", ...props }) => {
@@ -88,15 +91,12 @@ const FloatingPasswordInput = ({ id, name, placeholder, value, onChange, showPas
 
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
         email: '',
         password: '',
-        confirmPassword: '',
-        agreeToTerms: false
+        remember_me: false
     });
+    const router = useRouter();
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -109,13 +109,30 @@ const LoginPage = () => {
     const handleCheckboxChange = (checked) => {
         setFormData(prev => ({
             ...prev,
-            agreeToTerms: checked
+            remember_me: checked
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         console.log('Form submitted:', formData);
+
+        try {
+            const res = await axios.post('https://apitest.softvencefsd.xyz/api/login', formData);
+            const data = res.data; // ✅ define data
+
+            console.log(data);
+
+            if (data.status === true) {
+                toast.success(data.message || "Email verified successfully");
+                router.push("/");
+            } else {
+                toast.error(data.message || "Login failed");
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response?.data?.message || "Something went wrong");
+        }
     };
 
     return (
@@ -162,7 +179,7 @@ const LoginPage = () => {
                             <div>
                                 <Checkbox
                                     id="terms"
-                                    checked={formData.agreeToTerms}
+                                    checked={formData.remember_me}
                                     onCheckedChange={handleCheckboxChange}
                                     className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                                 />
@@ -179,7 +196,7 @@ const LoginPage = () => {
                         <Button
                             type="submit"
                             className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6"
-                            disabled={!formData.agreeToTerms}
+                            disabled={!formData.remember_me}
                         >
                             Create Account
                         </Button>

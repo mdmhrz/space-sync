@@ -3,7 +3,7 @@ import React from 'react';
 
 const AuthHeader = () => {
     return (
-        <div className='container mx-auto max-w-7xl py-4'>
+        <div className='container mx-auto max-w-7xl py-4 px-6'>
             <Link href={"/"}><img src="/header-logo.svg" alt="Header Logo" /></Link>
         </div>
     );

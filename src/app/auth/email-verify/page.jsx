@@ -6,31 +6,37 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useOtp } from '@/context/OtpContext';
-import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
-const VerifyCodePage = () => {
+const EmailVerify = () => {
     const [code, setCode] = useState(['', '', '', '', '', '']);
     const inputRefs = useRef([]);
-    const { otpData, setOtpData } = useOtp();
+    const { otpData } = useOtp();
     const router = useRouter();
 
+    // Redirect if otpData is missing
+    useEffect(() => {
+        if (!otpData?.email) {
+            toast.error("No email found to verify.");
+            router.push("/auth/register");
+        }
+    }, [otpData, router]);
+
     const handleInputChange = (index, value) => {
-        if (value.length > 1) return; // Only allow single digit
+        if (value.length > 1) return;
 
         const newCode = [...code];
         newCode[index] = value;
         setCode(newCode);
 
-        // Auto-focus next input
         if (value && index < 5) {
             inputRefs.current[index + 1].focus();
         }
     };
 
     const handleKeyDown = (index, e) => {
-        // Handle backspace
         if (e.key === 'Backspace' && !code[index] && index > 0) {
             inputRefs.current[index - 1].focus();
         }
@@ -46,42 +52,37 @@ const VerifyCodePage = () => {
         }
         setCode(newCode);
 
-        // Focus the next empty input or last input
         const nextEmptyIndex = newCode.findIndex(digit => !digit);
         const focusIndex = nextEmptyIndex === -1 ? 5 : nextEmptyIndex;
         inputRefs.current[focusIndex].focus();
     };
 
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         const verificationCode = code.join('');
-
         const payload = {
             email: otpData.email,
-            otp: verificationCode
+            otp: verificationCode,
         }
-        // console.log('Verification code submitted:', verificationCode);
+
         try {
-            const res = await axios.post("https://apitest.softvencefsd.xyz/api/forgot-verify-otp", payload);
-            console.log(res.data);
+            const res = await axios.post('https://apitest.softvencefsd.xyz/api/verify_otp', payload);
+            const data = res.data;
 
-            if (res.data.status === 201) {
-                setOtpData({ token: res?.data?.data?.token })
-                toast.success(res.data.message || "OTP Verified successfully");
-                router.push("/auth/reset-password");
+            if (data?.status) {
+                toast.success(data.message || "Email verified successfully");
+                router.push("/auth/login");
+            } else {
+                toast.error(data?.message || "OTP not matched! Try again");
             }
-
         } catch (error) {
-            const errorMsg = error?.response?.data?.message || "Something went wrong!";
+            const errorMsg = error?.response?.data?.message || "OTP not matched! Try again";
             toast.error(errorMsg);
         }
     };
 
     const handleResendCode = () => {
-        console.log('Resending code...');
-        // Reset the code
+        toast.info("Resending code...");
         setCode(['', '', '', '', '', '']);
         inputRefs.current[0].focus();
     };
@@ -93,7 +94,7 @@ const VerifyCodePage = () => {
             <Card className="w-full max-w-md border-none shadow-none">
                 <CardContent className="p-8">
                     {/* Back */}
-                    <Link href={'/auth/forgot-password'} className='flex items-center gap-2 mb-6 cursor-pointer'>
+                    <Link href={'/auth/register'} className='flex items-center gap-2 mb-6 cursor-pointer'>
                         <ArrowLeft className='text-primary' />
                         <p className='text-primary'>Back</p>
                     </Link>
@@ -104,8 +105,8 @@ const VerifyCodePage = () => {
                             Please check your email!
                         </h1>
                         <p className="text-muted-foreground">
-                            We've emailed a 6-digit confirmation code to scb@domain.
-                            please enter the code in below box to verify your email.
+                            We've emailed a 6-digit confirmation code to {otpData?.email}.
+                            Please enter the code in the box below to verify your email.
                         </p>
                     </div>
 
@@ -159,4 +160,4 @@ const VerifyCodePage = () => {
     );
 };
 
-export default VerifyCodePage;
+export default EmailVerify;

@@ -5,8 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-
-
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
+import { useOtp } from '@/context/OtpContext';
 
 // Floating Label Input Component
 const FloatingInput = ({ id, name, type = "text", placeholder, value, onChange, className = "", ...props }) => {
@@ -41,23 +43,34 @@ const FloatingInput = ({ id, name, type = "text", placeholder, value, onChange, 
     );
 };
 
-const RegisterPage = () => {
-    const [formData, setFormData] = useState({
-        email: '',
-    });
+const ForgotPasswordPage = () => {
+    const [formData, setFormData] = useState({ email: '' });
+    const router = useRouter();
+    const { otpData, setOtpData } = useOtp();
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Form submitted:', formData);
+        const email = formData.email;
+        setOtpData({ email: email })
+        try {
+            const res = await axios.post("https://apitest.softvencefsd.xyz/api/forgot-password", { email });
+            console.log(res.data);
+
+            if (res.data.status === 201) {
+
+                toast.success("Reset code sent to your email!");
+                router.push("/auth/verify-code");
+            }
+
+        } catch (error) {
+            const errorMsg = error?.response?.data?.message || "Something went wrong!";
+            toast.error(errorMsg);
+        }
     };
 
     return (
@@ -69,11 +82,10 @@ const RegisterPage = () => {
                         <ArrowLeft className='text-primary' />
                         <p className='text-primary'>Back</p>
                     </Link>
+
                     {/* Header */}
                     <div className="mb-8">
-                        <h1 className="text-2xl font-bold text-foreground mb-2">
-                            Forgot Password?
-                        </h1>
+                        <h1 className="text-2xl font-bold text-foreground mb-2">Forgot Password?</h1>
                         <p className="text-muted-foreground">
                             Please enter the email address associated with your account, and we'll email you a link to reset your password.
                         </p>
@@ -81,7 +93,6 @@ const RegisterPage = () => {
 
                     {/* Form */}
                     <form onSubmit={handleSubmit} className="space-y-6">
-
                         {/* Email Field */}
                         <FloatingInput
                             id="email"
@@ -92,18 +103,13 @@ const RegisterPage = () => {
                             onChange={handleInputChange}
                         />
 
-
                         {/* Submit Button */}
-                        <Link href={'/auth/verify-code'}>
-                            <Button
-                                type="submit"
-                                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6"
-
-                            >
-                                Reset Password
-                            </Button>
-                        </Link>
-
+                        <Button
+                            type="submit"
+                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6"
+                        >
+                            Reset Password
+                        </Button>
                     </form>
                 </CardContent>
             </Card>
@@ -111,4 +117,4 @@ const RegisterPage = () => {
     );
 };
 
-export default RegisterPage;
+export default ForgotPasswordPage;

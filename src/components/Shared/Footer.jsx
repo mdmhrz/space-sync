@@ -10,10 +10,10 @@ const Footer = () => {
     return (
         <div className='bg-[#0F3B34] relative'
             style={{
-                backgroundImage: "url('./footer/footer-background.svg')",
+                backgroundImage: "url('/footer/footer-background.svg')",
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "bottom right",
-                backgroundSize: "contain"
+                backgroundSize: "cover"
             }}>
 
             {/* Top side */}

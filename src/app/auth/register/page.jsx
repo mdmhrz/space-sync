@@ -7,6 +7,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import SocialLogin from '../SocialLogin/SocialLogin';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import { useOtp } from '@/context/OtpContext';
+import { toast } from 'react-toastify';
 
 // Floating Label Input Component
 const FloatingInput = ({ id, name, type = "text", placeholder, value, onChange, className = "", ...props }) => {
@@ -31,8 +35,8 @@ const FloatingInput = ({ id, name, type = "text", placeholder, value, onChange, 
             <label
                 htmlFor={id}
                 className={`absolute left-3 transition-all duration-200 pointer-events-none ${shouldFloat
-                        ? 'top-0 -translate-y-1/2 text-xs bg-background px-1 text-primary'
-                        : 'top-1/2 -translate-y-1/2 text-base text-muted-foreground'
+                    ? 'top-0 -translate-y-1/2 text-xs bg-background px-1 text-primary'
+                    : 'top-1/2 -translate-y-1/2 text-base text-muted-foreground'
                     }`}
             >
                 {placeholder}
@@ -63,8 +67,8 @@ const FloatingPasswordInput = ({ id, name, placeholder, value, onChange, showPas
             <label
                 htmlFor={id}
                 className={`absolute left-3 transition-all duration-200 pointer-events-none ${shouldFloat
-                        ? 'top-0 -translate-y-1/2 text-xs bg-background px-1 text-primary'
-                        : 'top-1/2 -translate-y-1/2 text-base text-muted-foreground'
+                    ? 'top-0 -translate-y-1/2 text-xs bg-background px-1 text-primary'
+                    : 'top-1/2 -translate-y-1/2 text-base text-muted-foreground'
                     }`}
             >
                 {placeholder}
@@ -89,6 +93,8 @@ const FloatingPasswordInput = ({ id, name, placeholder, value, onChange, showPas
 const RegisterPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const router = useRouter();
+    const { setOtpData } = useOtp();
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -113,9 +119,52 @@ const RegisterPage = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Form submitted:', formData);
+
+        const payload = {
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            email: formData.email,
+            password: formData.password,
+            password_confirmation: formData.confirmPassword,
+            terms: formData.agreeToTerms,
+        };
+
+        try {
+            const res = await axios.post(
+                "https://apitest.softvencefsd.xyz/api/register",
+                payload
+            );
+
+            const data = res?.data.data;
+            console.log(data);
+
+            if (data?.otp) {
+                // Set OTP in context/state
+                setOtpData({ email: data.email, otp: data.otp });
+
+                // Show success toast
+                toast.success(data.message || "Registered successfully!");
+
+                // sendOtpEmail(data)
+
+                // Navigate to verify page after a short delay
+                setTimeout(() => {
+                    router.push("/auth/email-verify");
+                }, 1000);
+            } else {
+                toast.error("OTP not received. Please try again.");
+            }
+        } catch (error) {
+            console.error(error);
+
+            // Extract backend error message if available
+            const errorMsg =
+                error?.response?.data?.message || "Something went wrong. Please try again.";
+
+            toast.error(errorMsg);
+        }
     };
 
     return (
@@ -135,7 +184,7 @@ const RegisterPage = () => {
                     {/* Form */}
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Name Fields */}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <FloatingInput
                                 id="firstName"
                                 name="firstName"
