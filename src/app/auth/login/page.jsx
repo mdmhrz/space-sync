@@ -91,6 +91,7 @@ const FloatingPasswordInput = ({ id, name, placeholder, value, onChange, showPas
 
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -115,23 +116,54 @@ const LoginPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Form submitted:', formData);
+        setIsLoading(true);
 
         try {
             const res = await axios.post('https://apitest.softvencefsd.xyz/api/login', formData);
-            const data = res.data; // ✅ define data
+            const data = res.data;
 
-            console.log(data);
+            console.log('Login response:', data);
 
             if (data.status === true) {
-                toast.success(data.message || "Email verified successfully");
+                // Store the token in localStorage
+                if (data.token) {
+                    localStorage.setItem('authToken', data.token);
+
+                    // Optionally store user data as well
+                    if (data.user) {
+                        localStorage.setItem('userData', JSON.stringify(data.user));
+                    }
+                } else if (data.data && data.data.token) {
+                    // Sometimes the token might be nested in a data object
+                    localStorage.setItem('authToken', data.data.token);
+
+                    if (data.data.user) {
+                        localStorage.setItem('userData', JSON.stringify(data.data.user));
+                    }
+                }
+
+                toast.success(data.message || "Login successful!");
+
+                // Redirect to dashboard or home page
                 router.push("/");
             } else {
                 toast.error(data.message || "Login failed");
             }
         } catch (error) {
-            console.error(error);
-            toast.error(error.response?.data?.message || "Something went wrong");
+            console.error('Login error:', error);
+
+            if (error.response) {
+                // Server responded with error status
+                toast.error(error.response.data?.message || "Login failed");
+            } else if (error.request) {
+                // Request was made but no response received
+                toast.error("Network error. Please check your connection.");
+            } else {
+                // Something else happened
+                toast.error("Something went wrong. Please try again.");
+            }
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -151,7 +183,6 @@ const LoginPage = () => {
 
                     {/* Form */}
                     <form onSubmit={handleSubmit} className="space-y-6">
-
                         {/* Email Field */}
                         <FloatingInput
                             id="email"
@@ -160,6 +191,7 @@ const LoginPage = () => {
                             placeholder="Email Address"
                             value={formData.email}
                             onChange={handleInputChange}
+                            required
                         />
 
                         {/* Password Field */}
@@ -173,32 +205,39 @@ const LoginPage = () => {
                             onTogglePassword={() => setShowPassword(!showPassword)}
                         />
 
-
-                        {/* Terms Checkbox */}
+                        {/* Remember Me Checkbox */}
                         <div className="flex items-center justify-between space-x-2">
-                            <div>
+                            <div className="flex items-center space-x-2">
                                 <Checkbox
-                                    id="terms"
+                                    id="remember_me"
                                     checked={formData.remember_me}
                                     onCheckedChange={handleCheckboxChange}
                                     className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                                 />
-                                <span htmlFor="terms" className="text-sm">
+                                <label htmlFor="remember_me" className="text-sm cursor-pointer">
                                     Remember me
-                                </span>
+                                </label>
                             </div>
 
-                            <Link className='underline text-sm' href={"/auth/forgot-password"}>Forgot Password?</Link>
-
+                            <Link className='underline text-sm hover:text-primary' href={"/auth/forgot-password"}>
+                                Forgot Password?
+                            </Link>
                         </div>
 
                         {/* Submit Button */}
                         <Button
                             type="submit"
                             className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6"
-                            disabled={!formData.remember_me}
+                            disabled={isLoading || !formData.email || !formData.password}
                         >
-                            Create Account
+                            {isLoading ? (
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    <span>Signing in...</span>
+                                </div>
+                            ) : (
+                                "Sign In"
+                            )}
                         </Button>
 
                         {/* Divider */}
@@ -211,17 +250,15 @@ const LoginPage = () => {
                             </div>
                         </div>
 
-                        {/* Google Sign Up */}
-                        <SocialLogin></SocialLogin>
+                        {/* Social Login */}
+                        <SocialLogin />
 
-                        {/* Sign In Link */}
+                        {/* Sign Up Link */}
                         <div className="text-center">
                             <span className="text-sm text-muted-foreground">
                                 Don't have an account?{' '}
-                                <Link href={"/auth/register"}>
-                                    <button type="button" className="text-primary hover:underline">
-                                        Get Started
-                                    </button>
+                                <Link href={"/auth/register"} className="text-primary hover:underline">
+                                    Get Started
                                 </Link>
                             </span>
                         </div>
