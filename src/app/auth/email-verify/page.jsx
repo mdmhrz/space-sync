@@ -15,6 +15,7 @@ const EmailVerify = () => {
     const inputRefs = useRef([]);
     const { otpData } = useOtp();
     const router = useRouter();
+    const [loading, setLoading] = useState(false)
 
     // Redirect if otpData is missing
     useEffect(() => {
@@ -57,6 +58,7 @@ const EmailVerify = () => {
         inputRefs.current[focusIndex].focus();
     };
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const verificationCode = code.join('');
@@ -66,6 +68,7 @@ const EmailVerify = () => {
         }
 
         try {
+            setLoading(true); // start loading
             const res = await axios.post('https://apitest.softvencefsd.xyz/api/verify_otp', payload);
             const data = res.data;
 
@@ -78,6 +81,8 @@ const EmailVerify = () => {
         } catch (error) {
             const errorMsg = error?.response?.data?.message || "OTP not matched! Try again";
             toast.error(errorMsg);
+        } finally {
+            setLoading(false); // stop loading
         }
     };
 
@@ -134,10 +139,36 @@ const EmailVerify = () => {
                         {/* Submit Button */}
                         <Button
                             type="submit"
-                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6"
-                            disabled={!isCodeComplete}
+                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 flex items-center justify-center gap-2"
+                            disabled={!isCodeComplete || loading}
                         >
-                            Verify
+                            {loading ? (
+                                <>
+                                    <svg
+                                        className="w-5 h-5 animate-spin text-white"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <circle
+                                            className="opacity-25"
+                                            cx="12"
+                                            cy="12"
+                                            r="10"
+                                            stroke="currentColor"
+                                            strokeWidth="4"
+                                        ></circle>
+                                        <path
+                                            className="opacity-75"
+                                            fill="currentColor"
+                                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                        ></path>
+                                    </svg>
+                                    Verifying...
+                                </>
+                            ) : (
+                                "Verify"
+                            )}
                         </Button>
 
                         {/* Resend Code */}

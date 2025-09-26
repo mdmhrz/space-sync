@@ -47,6 +47,7 @@ const ForgotPasswordPage = () => {
     const [formData, setFormData] = useState({ email: '' });
     const router = useRouter();
     const { otpData, setOtpData } = useOtp();
+    const [loading, setLoading] = useState(false)
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -58,6 +59,7 @@ const ForgotPasswordPage = () => {
         const email = formData.email;
         setOtpData({ email: email })
         try {
+            setLoading(true)
             const res = await axios.post("https://apitest.softvencefsd.xyz/api/forgot-password", { email });
             console.log(res.data);
 
@@ -65,11 +67,13 @@ const ForgotPasswordPage = () => {
 
                 toast.success("Reset code sent to your email!");
                 router.push("/auth/verify-code");
+                setLoading(false)
             }
 
         } catch (error) {
             const errorMsg = error?.response?.data?.message || "Something went wrong!";
             toast.error(errorMsg);
+            setLoading(false)
         }
     };
 
@@ -104,12 +108,42 @@ const ForgotPasswordPage = () => {
                         />
 
                         {/* Submit Button */}
+
                         <Button
                             type="submit"
-                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6"
+                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 flex items-center justify-center gap-2"
+                            disabled={loading}
                         >
-                            Reset Password
+                            {loading ? (
+                                <>
+                                    <svg
+                                        className="w-5 h-5 animate-spin text-white"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <circle
+                                            className="opacity-25"
+                                            cx="12"
+                                            cy="12"
+                                            r="10"
+                                            stroke="currentColor"
+                                            strokeWidth="4"
+                                        ></circle>
+                                        <path
+                                            className="opacity-75"
+                                            fill="currentColor"
+                                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                        ></path>
+                                    </svg>
+                                    Reseting...
+                                </>
+                            ) : (
+                                "Reset"
+                            )}
                         </Button>
+
+
                     </form>
                 </CardContent>
             </Card>

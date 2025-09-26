@@ -15,6 +15,7 @@ const VerifyCodePage = () => {
     const inputRefs = useRef([]);
     const { otpData, setOtpData } = useOtp();
     const router = useRouter();
+    const [loading, setLoading] = useState(false)
 
     const handleInputChange = (index, value) => {
         if (value.length > 1) return; // Only allow single digit
@@ -64,6 +65,7 @@ const VerifyCodePage = () => {
         }
         // console.log('Verification code submitted:', verificationCode);
         try {
+            setLoading(true)
             const res = await axios.post("https://apitest.softvencefsd.xyz/api/forgot-verify-otp", payload);
             console.log(res.data);
 
@@ -71,11 +73,13 @@ const VerifyCodePage = () => {
                 setOtpData({ token: res?.data?.data?.token })
                 toast.success(res.data.message || "OTP Verified successfully");
                 router.push("/auth/reset-password");
+                setLoading(false)
             }
 
         } catch (error) {
             const errorMsg = error?.response?.data?.message || "Something went wrong!";
             toast.error(errorMsg);
+            setLoading(false)
         }
     };
 
@@ -133,11 +137,41 @@ const VerifyCodePage = () => {
                         {/* Submit Button */}
                         <Button
                             type="submit"
-                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6"
-                            disabled={!isCodeComplete}
+                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 flex items-center justify-center gap-2"
+                            disabled={!isCodeComplete || loading}
                         >
-                            Verify
+                            {loading ? (
+                                <>
+                                    <svg
+                                        className="w-5 h-5 animate-spin text-white"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <circle
+                                            className="opacity-25"
+                                            cx="12"
+                                            cy="12"
+                                            r="10"
+                                            stroke="currentColor"
+                                            strokeWidth="4"
+                                        ></circle>
+                                        <path
+                                            className="opacity-75"
+                                            fill="currentColor"
+                                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                        ></path>
+                                    </svg>
+                                    Verifying...
+                                </>
+                            ) : (
+                                "Verify"
+                            )}
                         </Button>
+
+
+
+
 
                         {/* Resend Code */}
                         <div className="text-center">
