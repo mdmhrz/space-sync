@@ -1,6 +1,12 @@
+"use client"
+import { usePathname } from 'next/navigation';
 import React from 'react';
 
 const Footer = () => {
+    const pathName = usePathname() || "";
+    if (pathName.startsWith("/auth")) {
+        return
+    }
     return (
         <div className='bg-[#0F3B34] relative'
             style={{
