@@ -141,11 +141,7 @@ const BuildForEveryone = () => {
                                     />
 
                                     <div
-                                        className={`w-[600px] h-[800px] absolute top-2/4 z-0 -translate-y-1/2 blur-3xl  
-                                                ${index % 2 === 0
-                                                ? "rotate-[135deg] translate-x-[450px]"
-                                                : "rotate-45 -translate-x-[450px]"} 
-                                                bg-primary/10 rounded-full`}
+                                        className={`w-[600px] h-[800px] bg-[#9BFF96]/10 rounded-full absolute top-2/4 z-0 -translate-y-1/2 blur-3xl ${index % 2 === 0 ? "rotate-[135deg] translate-x-[450px]" : "rotate-45 -translate-x-[450px]"}`}
                                     ></div>
                                 </div>
                             </div>
