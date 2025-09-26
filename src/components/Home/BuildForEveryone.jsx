@@ -68,15 +68,6 @@ const BuildForEveryone = () => {
             <img className='absolute top-7/24 -translate-y-1/2 right-0 ' src="/everyone/background-right.svg" alt="center-background" />
 
             <section className='container mx-auto max-w-7xl px-6'>
-                {/* Background decorative shapes */}
-                <div className="absolute inset-0">
-                    <div className="absolute top-20 right-0 w-96 h-96 bg-primary/5 rounded-full transform translate-x-48"></div>
-                    <div className="absolute top-40 right-20 w-64 h-64 bg-primary/3 rounded-full"></div>
-                    <div className="absolute top-1/2 left-0 w-80 h-80 bg-primary/5 rounded-full transform -translate-x-40"></div>
-                    <div className="absolute top-1/2 left-10 w-48 h-48 bg-primary/3 rounded-full transform translate-y-20"></div>
-                    <div className="absolute bottom-20 right-10 w-72 h-72 bg-primary/5 rounded-full transform translate-x-36"></div>
-                    <div className="absolute bottom-40 right-40 w-40 h-40 bg-primary/3 rounded-full"></div>
-                </div>
 
                 <div className="container mx-auto px-6 relative z-10">
                     {/* Header */}
@@ -102,8 +93,10 @@ const BuildForEveryone = () => {
                     {/* Sections */}
                     {sections.map((section, index) => (
                         <div key={section.id} className={`grid lg:grid-cols-2 gap-16 items-center ${index < sections.length - 1 ? 'mb-16' : ''}`}>
+
                             {/* Content */}
                             <div className={section.imagePosition === 'right' ? 'order-2 lg:order-1' : 'order-1 lg:order-2'}>
+
                                 <Badge variant="secondary" className="text-primary bg-transparent border-primary rounded-full text-md hover:bg-primary/5 mb-6 px-6  flex items-center justify-center">
                                     {section.badge}
                                 </Badge>
@@ -125,13 +118,35 @@ const BuildForEveryone = () => {
 
                             {/* Image */}
                             <div className={section.imagePosition === 'right' ? 'order-1 lg:order-2 flex justify-center' : 'order-2 lg:order-1 flex justify-center'}>
-                                <div className="relative">
+                                <div className="relative inline-block">
                                     <img
                                         src={section.image}
                                         alt={section.imageAlt}
-                                        className="w-full h-auto"
+                                        className="w-full h-auto relative z-10"
                                     />
-                                    <div className='absolute bottom-0 h-40 w-full bg-gradient-to-t from-white to-transparent'></div>
+
+                                    <div
+                                        className="absolute z-11 inset-0"
+                                        style={{
+                                            WebkitMaskImage: `url(${section.image})`,
+                                            WebkitMaskRepeat: "no-repeat",
+                                            WebkitMaskSize: "cover",
+                                            WebkitMaskPosition: "center",
+                                            maskImage: `url(${section.image})`,
+                                            maskRepeat: "no-repeat",
+                                            maskSize: "cover",
+                                            maskPosition: "center",
+                                            background: "linear-gradient(to top, white, transparent, transparent, transparent)",
+                                        }}
+                                    />
+
+                                    <div
+                                        className={`w-[600px] h-[800px] absolute top-2/4 z-0 -translate-y-1/2 blur-3xl  
+                                                ${index % 2 === 0
+                                                ? "rotate-[135deg] translate-x-[450px]"
+                                                : "rotate-45 -translate-x-[450px]"} 
+                                                bg-primary/10 rounded-full`}
+                                    ></div>
                                 </div>
                             </div>
                         </div>
