@@ -1,6 +1,8 @@
+"use client"
 import React from 'react';
 import { Calendar, Target, BarChart3, Shield } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { motion } from "framer-motion";
 
 const Features = () => {
     const features = [
@@ -29,37 +31,74 @@ const Features = () => {
     return (
         <section className="py-20 bg-background">
             <div className="container mx-auto max-w-7xl px-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <motion.div
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+                    initial="hidden"
+                    whileInView="visible"
+                    variants={{
+                        hidden: {},
+                        visible: {
+                            transition: { staggerChildren: 0.2 }
+                        }
+                    }}
+                    viewport={{ once: true }}
+                >
                     {features.map((feature, index) => {
                         const Icon = feature.icon;
                         return (
-                            <Card key={index} className="border-none shadow-none bg-transparent relative">
-                                <CardContent className="p-0">
-                                    {/* Right border for all except last item */}
-                                    {index < features.length - 1 && (
-                                        <div className="absolute right-0 top-4 bottom-4 w-px bg-border/50 hidden lg:block"></div>
-                                    )}
-                                    {/* Icon */}
-                                    <div className="mb-6">
-                                        <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
-                                            <Icon className="w-8 h-8 text-primary" />
-                                        </div>
-                                    </div>
+                            <motion.div
+                                key={index}
+                                variants={{
+                                    hidden: { opacity: 0, y: 50, scale: 0.9 },
+                                    visible: { opacity: 1, y: 0, scale: 1 }
+                                }}
+                                transition={{ duration: 0.8, type: "spring" }}
+                                whileHover={{ scale: 1.05, rotate: 1 }}
+                            >
+                                <Card className="border-none shadow-none bg-transparent relative">
+                                    <CardContent className="p-0">
+                                        {/* Right border for all except last item */}
+                                        {index < features.length - 1 && (
+                                            <div className="absolute right-0 top-4 bottom-4 w-px bg-border/50 hidden lg:block"></div>
+                                        )}
 
-                                    {/* Title */}
-                                    <h3 className="text-xl font-semibold text-foreground mb-4">
-                                        {feature.title}
-                                    </h3>
+                                        {/* Icon */}
+                                        <motion.div
+                                            className="mb-6"
+                                            initial={{ opacity: 0, scale: 0.5, rotate: -20 }}
+                                            whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                                            transition={{ duration: 0.7, delay: 0.2 }}
+                                        >
+                                            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
+                                                <Icon className="w-8 h-8 text-primary" />
+                                            </div>
+                                        </motion.div>
 
-                                    {/* Description */}
-                                    <p className="text-muted-foreground leading-relaxed">
-                                        {feature.description}
-                                    </p>
-                                </CardContent>
-                            </Card>
+                                        {/* Title */}
+                                        <motion.h3
+                                            className="text-xl font-semibold text-foreground mb-4"
+                                            initial={{ opacity: 0, y: 20 }}
+                                            whileInView={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.6, delay: 0.3 }}
+                                        >
+                                            {feature.title}
+                                        </motion.h3>
+
+                                        {/* Description */}
+                                        <motion.p
+                                            className="text-muted-foreground leading-relaxed"
+                                            initial={{ opacity: 0, y: 20 }}
+                                            whileInView={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.6, delay: 0.4 }}
+                                        >
+                                            {feature.description}
+                                        </motion.p>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
                         );
                     })}
-                </div>
+                </motion.div>
             </div>
         </section>
     );
