@@ -60,7 +60,7 @@ const Header = () => {
     if (pathName.startsWith("/auth")) return <AuthHeader />;
 
     return (
-        <nav className='border-b border-border sticky top-0 z-10 bg-background'>
+        <nav className='border-b border-border sticky top-0 z-[9999] bg-background'>
             <div className='container mx-auto max-w-7xl py-4 px-6 flex items-center justify-between'>
                 <img src="./header-logo.svg" alt="logo" />
 
