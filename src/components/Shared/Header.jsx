@@ -60,22 +60,24 @@ const Header = () => {
     if (pathName.startsWith("/auth")) return <AuthHeader />;
 
     return (
-        <div className='container mx-auto max-w-7xl py-4 px-6 flex items-center justify-between'>
-            <img src="./header-logo.svg" alt="logo" />
+        <nav className='border-b border-border sticky top-0 z-10 bg-background'>
+            <div className='container mx-auto max-w-7xl py-4 px-6 flex items-center justify-between'>
+                <img src="./header-logo.svg" alt="logo" />
 
-            {user ? (
-                <div className='flex items-center gap-3'>
-                    <span>{user.name || user.email}</span>
-                    <Button onClick={handleLogout} className="ml-4 bg-red-500 hover:bg-red-600">
-                        Logout
-                    </Button>
-                </div>
-            ) : (
-                <Link href={"/auth/register"}>
-                    <Button>Get Started</Button>
-                </Link>
-            )}
-        </div>
+                {user ? (
+                    <div className='flex items-center gap-3'>
+                        <span>{user.name || user.email}</span>
+                        <Button onClick={handleLogout} className="ml-4 bg-red-500 hover:bg-red-600">
+                            Logout
+                        </Button>
+                    </div>
+                ) : (
+                    <Link href={"/auth/register"}>
+                        <Button>Get Started</Button>
+                    </Link>
+                )}
+            </div>
+        </nav>
     );
 };
 

@@ -64,7 +64,7 @@ const BuildForEveryone = () => {
 
     return (
         <div className="py-20 bg-background relative overflow-hidden ralative">
-            <img className='absolute top-11/24 -translate-y-1/2 left-1/2 -translate-x-1/2 ' src="/everyone/background-center.svg" alt="center-background" />
+            <img className='hidden lg:block absolute top-11/24 -translate-y-1/2 left-1/2 -translate-x-1/2 ' src="/everyone/background-center.svg" alt="center-background" />
             <img className='absolute top-7/24 -translate-y-1/2 right-0 ' src="/everyone/background-right.svg" alt="center-background" />
 
             <section className='container mx-auto max-w-7xl px-6'>
@@ -86,7 +86,7 @@ const BuildForEveryone = () => {
                                 Whether you're booking services, managing tasks, or running operations, we've
                                 designed the perfect experience for you.
                             </p>
-                            <img className='absolute left-10' src="/everyone/background-left.svg" alt="" />
+                            <img className='hidden lg:block absolute left-10' src="/everyone/background-left.svg" alt="" />
                         </div>
                     </div>
 
@@ -95,7 +95,7 @@ const BuildForEveryone = () => {
                         <div key={section.id} className={`grid lg:grid-cols-2 gap-16 items-center ${index < sections.length - 1 ? 'mb-16' : ''}`}>
 
                             {/* Content */}
-                            <div className={section.imagePosition === 'right' ? 'order-2 lg:order-1' : 'order-1 lg:order-2'}>
+                            <div className={section.imagePosition === 'right' ? 'order-1' : 'order-2'}>
 
                                 <Badge variant="secondary" className="text-primary bg-transparent border-primary rounded-full text-md hover:bg-primary/5 mb-6 px-6  flex items-center justify-center">
                                     {section.badge}
